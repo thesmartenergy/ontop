@@ -130,34 +130,6 @@
         </dependency>
         
         <dependency>
-            <groupId>com.github.thesmartenergy</groupId>
-            <artifactId>sparql-generate-jena</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-
-<!-- dependencies for corese -->
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgengine</artifactId>
-            <version>${kgengine.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.semarglproject</groupId>
-            <artifactId>semargl-rdf</artifactId>
-            <version>${semargl-rdf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jsonld-java</groupId>
-            <artifactId>jsonld-java</artifactId>
-            <version>${jsonld-java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-rio-api</artifactId>
-            <version>${sesame-rio-api.version}</version>
-        </dependency>
-        <!-- end of dependencies for corese -->
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
@@ -185,11 +157,6 @@
                         <siteOutputDirectory>target\${project.build.finalName}</siteOutputDirectory>
                     </configuration>
                 </plugin>
-                <!-- ========================  -->
-                <!--    SITE LIFECYCLE         -->
-                <!-- ========================  -->
-
-                <!-- configure attach-descriptor  -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>

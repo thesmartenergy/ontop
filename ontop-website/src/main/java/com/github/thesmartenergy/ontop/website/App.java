@@ -29,7 +29,7 @@ public class App {
             
     @Produces
     @BaseURI
-    static final String BASE = "https://w3id.org/ontop/";
+    static final String BASE = "https://w3id.org/ontop/"; 
     
     @Produces
     @DevelopmentBaseURI
