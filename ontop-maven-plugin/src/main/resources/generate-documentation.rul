@@ -63,7 +63,7 @@ xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
           owl:versionInfo ?versionInfo .
         
         OPTIONAL { ?ontology  dc:issued ?issued . }
-        OPTIONAL { ?ontology  dc:modified dc:modified . }
+        OPTIONAL { ?ontology  dc:modified ?modified . }
         OPTIONAL { ?ontology owl:priorVersion ?priorVersion . }
         
         BIND( IF(BOUND(?issued), CONCAT( ", <strong>issued:</strong>", str(?issued)), "") AS ?htmlissued)
