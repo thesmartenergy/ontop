@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -42,6 +43,8 @@ import org.apache.jena.vocabulary.RDFS;
  */
 @ApplicationScoped
 public class RepresentationsMap {
+    
+    private static final Logger LOG = Logger.getLogger(RepresentationsMap.class.getSimpleName());
 
     /**
      * value rdfs:isDefinedBy key
@@ -67,7 +70,7 @@ public class RepresentationsMap {
     @BaseURI
     private String base;
 
-    private Model conf;
+    private Model conf = null;
 
     @PostConstruct
     private void postConstruct() {
@@ -75,7 +78,8 @@ public class RepresentationsMap {
         try {
             conf = RDFDataMgr.loadModel(RepresentationsMap.class.getClassLoader().getResource(confpath).toURI().toString());
         } catch (Exception ex) {
-            throw new RuntimeException("conf " + confpath + "could not be loaded.", ex);
+            LOG.warning("Configuration file '" + confpath + "'. ONTOP will be disabled.");
+            return;
         }
 
         try {
