@@ -25,7 +25,7 @@ import javax.enterprise.inject.Produces;
  */
 public class App {
     
-    static final boolean DEV = true;
+    static final boolean DEV = false;
             
     @Produces
     @BaseURI
