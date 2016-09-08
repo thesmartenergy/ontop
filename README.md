@@ -16,15 +16,11 @@ This project contains the sources for the Ontology Platform project:
 - `ontop-jersey` is an extension of Jersey that exposes the ontologies, their documentation, and other resources.
 - `ontop-website` contains the sources of the project website at https://w3id.org/ontop/
 
-Binaries, sources and documentation for `ontop` are available for download at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Contop%22). To use it in your Maven project, add the following dependency declaration to your Maven project file ( `*.pom` file):
+Binaries, sources and documentation for `ontop` are available for download at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Contop%22). 
+To use it in your Maven project, add the ontop plugin, the maven site plugin, and the ontop dependency to your Maven project file ( `*.pom` file), like the POM of this project.
+
+(more doc soon...)
  
-```xml
-<dependency>
-    <groupId>com.github.thesmartenergy</groupId>
-    <artifactId>pep-jersey-server</artifactId>
-    <version>${pep-jersey.version}</version>
-</dependency>
-```
 
 ## Used in
 
