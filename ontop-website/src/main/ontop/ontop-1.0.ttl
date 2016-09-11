@@ -1,0 +1,89 @@
+# Copyright 2016 ITEA 12004 SEAS Project.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing,
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix voaf: <http://purl.org/vocommons/voaf#> .
+@prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix cc: <http://creativecommons.org/ns#>.
+@prefix rdfp: <https://w3id.org/rdfp/>.
+@prefix ontop: <https://w3id.org/ontop/>.
+
+@base <https://w3id.org/ontop/>.
+
+ontop: rdf:type voaf:Vocabulary , owl:Ontology ;
+  dc:title "ONTOP - Ontology Platform"@en ;
+  dc:description """Project ONTOP eases the exposition of ontologies and other resources in Maven java web applications.
+
+Ontologies and other resources to be exposed are placed in folder `src/main/ontop`, along with a RDF configuration file `config.ttl` that describes the different resources and their representations, using the [RDF Presentation vocabulary](https://w3id.org/rdfp/), augmented with the ONTOP vocabulary.
+
+- maven plugin `ontop-maven-plugin` checks the quality of the ontologies, pre-generate their documentation, and potentially other RDF representation;
+- project `ontop-jersey` exposes these resources on the web.
+
+This document describes the ONTOP vocabulary only.
+
+## Related projects
+
+The following web applications use ONTOP to document and expose ontologies and other resources:
+
+- [SEAS - Smart Energy Aware Systems ontologies ](https://w3id.org/seas/);
+- [Lindt - Linked Datatypes](https://w3id.org/lindt/);
+- [RDFP - RDF Presentation project](https://w3id.org/rdfp/);
+- [PEP - Process Execution Platform project](https://w3id.org/pep/);
+- [STN - the Socio-technical networks ontologies](https://w3id.org/stn/);
+- [CNR Smart Charging Provider, a SEAS pilot platform](http://cnr-seas.cloudapp.net/scp/).
+
+## Contact
+
+maxime.lefrancois.86@gmail.com
+
+http://maxime-lefrancois.info/"""@en ;
+  dc:author <http://maxime-lefrancois.info/me#> ;
+  dc:issued "2016-09-09"^^xsd:date ;
+  dc:modified "2016-09-11"^^xsd:date ;
+  cc:license <https://creativecommons.org/licenses/by/4.0/> ;
+  vann:preferredNamespacePrefix "ontop" ;
+  vann:preferredNamespaceUri ontop: ;  
+  owl:versionIRI <ontop-1.0> ;
+  owl:versionInfo "v1.0" . 
+
+ontop:Ontology a owl:Class ;
+  rdfs:label "Ontology"@en ;
+  rdfs:comment """The class of web resources that expose OWL ontologies according to this specification."""@en ;
+  rdfs:subClassOf rdfp:Graph ;
+  vs:term_status "testing" ;
+  rdfs:isDefinedBy ontop: .
+
+ontop:OntologySet a owl:Class ;
+  rdfs:label "Ontology Set"@en ;
+  rdfs:comment """Regroups a set of `ontop:Ontology`: web resources that expose OWL ontologies according to this specification."""@en ;
+  vs:term_status "testing" ;
+  rdfs:isDefinedBy ontop: .
+
+ontop:filePath a owl:DatatypeProperty ;
+  rdfs:label "file path"@en ;
+  rdfs:comment """Links a `rdfp:Representation`, a `rdfp:Graph`, or an `ontop:Ontology` to the local path of the representation content."""@en ;
+  vs:term_status "testing" ;
+  rdfs:isDefinedBy ontop: .
+
+ontop:fileSelector a owl:DatatypeProperty ;
+  rdfs:label "file selector"@en ;
+  rdfs:comment """Links a `ontop:OntologySet` to a regular expression that is used to select ontology files."""@en ;
+  vs:term_status "testing" ;
+  rdfs:isDefinedBy ontop: .
