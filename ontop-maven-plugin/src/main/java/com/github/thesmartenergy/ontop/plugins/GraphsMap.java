@@ -26,50 +26,36 @@ import java.util.Map;
  *
  * @author Maxime Lefrançois <maxime.lefrancois at emse.fr>
  */
-public class OntologiesMap {
+public class GraphsMap {
 
     /**
-     * key and value are resource. paths values must be keys for RESOURCES or
-     * ONTO_RESOURCES
+     * key and value are resource paths. values must be keys for GRAPH_RESOURCES
      */
     private final Map<String, String> REDIRECTIONS = new HashMap<>();
 
     /**
-     * key is an ontology name
+     * key is an graph name
      */
-    private final Map<String, VersionedOntology> ONTO_RESOURCES = new HashMap<>();
+    private final Map<String, GraphResource> GRAPH_RESOURCES = new HashMap<>();
 
-    public void registerOntology(VersionedOntology ontology) throws OntopException {
-        registerVersionUri(ontology);
-        boolean isMostRecent = registerMainUri(ontology);
-        registerResources(ontology, isMostRecent);
+    public void registerGraph(GraphResource graph) throws OntopException {
+        registerMainUri(graph);
+        registerResources(graph);
     }
 
-    private void registerVersionUri(VersionedOntology ontology) throws OntopException {
-        String versionPath = ontology.getVersionPath();
-        if (ONTO_RESOURCES.containsKey(versionPath)) {
-            throw new OntopException("An ontology with version URI " + versionPath + " already exists.");
-        } else {
-            ONTO_RESOURCES.put(consolidate(versionPath), ontology);
+    private void registerMainUri(GraphResource graph) throws OntopException {
+        String graphPath = graph.getGraphPath();
+        GraphResource other = GRAPH_RESOURCES.get(graphPath);
+        if (other == null) {
+            GRAPH_RESOURCES.put(consolidate(graphPath), graph);
         }
-
     }
 
-    private boolean registerMainUri(VersionedOntology ontology) throws OntopException {
-        String ontologyPath = ontology.getOntologyPath();
-        VersionedOntology other = ONTO_RESOURCES.get(ontologyPath);
-        if (other == null || ontology.compareVersions(other) > 0) {
-            ONTO_RESOURCES.put(consolidate(ontologyPath), ontology);
-            return true;
-        }
-        return false;
-    }
-
-    private void registerResources(VersionedOntology ontology, boolean mostRecent) {
-        for (String resource : ontology.getDefinedResources()) {
+    private void registerResources(GraphResource graph) {
+        for (String resource : graph.getDefinedResources()) {
             String primaryResource = getPrimaryResourceUri(resource);
-            if (mostRecent || !REDIRECTIONS.containsKey(primaryResource)) {
-                REDIRECTIONS.put(primaryResource, ontology.getVersionPath());
+            if (!REDIRECTIONS.containsKey(primaryResource)) {
+                REDIRECTIONS.put(primaryResource, graph.getGraphPath());
             }
         }
     }
@@ -79,8 +65,8 @@ public class OntologiesMap {
     }
 
 
-    public Map<String, VersionedOntology> getOntologyResources() {
-        return ONTO_RESOURCES;
+    public Map<String, GraphResource> getGraphResources() {
+        return GRAPH_RESOURCES;
     }
 
     private String getPrimaryResourceUri(String resourceUri) {

@@ -15,8 +15,8 @@
  */
 package com.github.thesmartenergy.ontop.website;
 
-import com.github.thesmartenergy.ontop.BaseURI;
-import com.github.thesmartenergy.ontop.DevelopmentBaseURI;
+import com.github.thesmartenergy.rdfp.BaseURI;
+import com.github.thesmartenergy.rdfp.DevelopmentBaseURI;
 import javax.enterprise.inject.Produces;
 
 /**
@@ -25,7 +25,7 @@ import javax.enterprise.inject.Produces;
  */
 public class App {
     
-    static final boolean DEV = false;
+    static final boolean DEV = true;
             
     @Produces
     @BaseURI

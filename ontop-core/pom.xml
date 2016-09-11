@@ -13,78 +13,37 @@
     <name>Ontology Platform - core</name>
     <description>Core classes for the ontology platform project</description>
     <url>https://w3id.org/ontop/</url>
-    <inceptionYear>2016</inceptionYear>
-
-    <developers>
-        <developer>
-            <name>Maxime Lefrançois</name>            
-            <email>maxime.lefrancois@emse.fr</email>
-            <url>http://maxime-lefrancois.info/</url>
-            <organization>Ecole des mines de Saint-Etienne</organization>
-            <organizationUrl>http://www.mines-stetienne.fr/</organizationUrl>
-            <timezone>UTC+01:00</timezone>
-            <properties>
-                <picUrl>http://gravatar.com/userimage/102097381/dac8aeb15edac9a93e09a7974743957f</picUrl>
-            </properties>        
-        </developer>
-    </developers>
-
-    <organization>
-        <name>ITEA 12004 SEAS Project</name>
-        <url>https://itea3.org/project/seas.html</url>
-    </organization>
-
-    <scm>
-        <connection>scm:git:https://${repository.domain}/${repository.user}/ontop.git</connection>
-        <url>https://${repository.domain}/${repository.user}/ontop</url>
-        <developerConnection>scm:git:ssh://${repository.domain}/${repository.user}/ontop.git
-        </developerConnection>
-    </scm>
-
-    <issueManagement>
-        <url>http://${repository.domain}/${repository.user}/ontop/issues</url>
-        <system>GitHub Issues</system>
-    </issueManagement>
-        
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <changelog.github.fileUri>${project.scm.url}/tree/master/%FILE%</changelog.github.fileUri>
-        <changelog.revision.github.fileUri>${project.scm.url}/commit</changelog.revision.github.fileUri>
-        <jena.version>3.0.1</jena.version>
+        <rdfp.version>1.2-SNAPSHOT</rdfp.version>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
-            <version>1.2</version>
+            <version>${javax.annotation-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <version>${cdi-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0.1</version>
+            <version>${javax.ws.rs-api.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>${jena.version}</version>
+            <groupId>com.github.thesmartenergy</groupId>
+            <artifactId>rdfp-jersey-server</artifactId>
+            <version>${rdfp.version}</version>
         </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -94,42 +53,7 @@
 
     <build>
         <finalName>ontop-core-${project.version}</finalName>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar</goal>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.3</version>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <failOnError>false</failOnError>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-        <plugins>                
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -137,18 +61,7 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>-->
         </plugins>
     </build>
-    
+
 </project>

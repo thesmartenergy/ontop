@@ -15,7 +15,7 @@
  */
 package com.github.thesmartenergy.ontop;
 
-import javax.ws.rs.core.MediaType;
+import static com.github.thesmartenergy.rdfp.RDFP.NS;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -26,22 +26,14 @@ import org.apache.jena.rdf.model.ResourceFactory;
  */
 public class ONTOP {
     
-    public static final MediaType APPLICATION_RDFXML_TYPE = MediaType.valueOf("application/rdf+xml");
-    
-    public static final MediaType TEXT_TURTLE_TYPE = MediaType.valueOf("text/turtle");
+    public static final String CONF = "config.ttl";
 
     public static final String NS = "https://w3id.org/ontop/";
+    
+    public static final Resource Ontology = ResourceFactory.createResource(NS + "Ontology");
 
-    public static final Resource Graph = ResourceFactory.createResource(NS + "Graph");
-
-    public static final Resource Resource = ResourceFactory.createResource(NS + "Resource");
-
-    public static final Property representedBy = ResourceFactory.createProperty(NS + "representedBy");
+    public static final Property fileSelector = ResourceFactory.createProperty(NS + "fileSelector");
 
     public static final Property filePath = ResourceFactory.createProperty(NS + "filePath");
-
-    public static final Property mediaType = ResourceFactory.createProperty(NS + "mediaType");
-
-    public static final Property alias = ResourceFactory.createProperty(NS + "alias");
 
 }

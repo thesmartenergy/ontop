@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2016 ITEA 12004 SEAS Project.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, 
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.-->
+<rdf:RDF xmlns="http://ns.inria.fr/edelweiss/2011/rule#"
+         xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+    <rule>
+        <body><![CDATA[
+    # generates the body of the HTML documentationfor an ontology
+    # starting point, called once.
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE st:start {
+     st:call-template(doc:ontology)
+      }
+    WHERE {  }
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:ontology {
+            
+        st:call-template(doc:title, ?ontology)
+        "- **This version:** " str(?versionInfo) " - " str(?versionUri) "\n"
+        "- **Latest published version:** " str(?ontology) "\n"        
+        st:call-template(doc:priorversion, ?ontology)
+        st:call-template(doc:authors, ?ontology, dc:author, "Authors")
+        st:call-template(doc:authors, ?ontology, dc:contributor, "Contributors")
+        st:call-template(doc:date, ?ontology, dc:issued, "Issued")
+        st:call-template(doc:date, ?ontology, dc:modified, "Modified")
+        st:call-template(doc:imports, ?ontology, ?ns)
+        "- **Other visualizations:** [VOWL](http://vowl.visualdataweb.org/webvowl/#iri=" str(?versionUri) ".rdf), [Turtle](" str(?versionUri) ".ttl),  [RDF/XML](" str(?versionUri) ".rdf).\n"
+        st:call-template(doc:license, ?ontology)
+        "\n"
+        st:call-template(doc:description, ?ontology)
+        st:call-template(doc:classes, ?ontology, ?ns, owl:Class, "### Classes\n")
+        st:call-template(doc:classes, ?ontology, ?ns, owl:ObjectProperty, "### Object Properties\n")
+        st:call-template(doc:classes, ?ontology, ?ns, owl:DatatypeProperty, "### Data Properties\n")
+        st:call-template(doc:instance, ?ontology, ?ns)
+    } WHERE { 
+        ?ontology a owl:Ontology , voaf:Vocabulary ;
+          dc:title ?title ;
+          vann:preferredNamespacePrefix ?prefix ;
+          vann:preferredNamespaceUri ?ns ;  
+          owl:versionIRI ?versionUri ;
+          owl:versionInfo ?versionInfo .
+        
+        OPTIONAL { ?ontology  dc:issued ?issued . }
+        OPTIONAL { ?ontology  dc:modified ?modified . }
+        
+        BIND( IF(BOUND(?issued), CONCAT( ", **issued:**", str(?issued), "\n\n"), "") AS ?htmlissued)
+        BIND( IF(BOUND(?modified), CONCAT( ", **modified:**", str(?modified), "\n\n"), "") AS ?htmlmodified)
+    }
+  ]]></body>
+    </rule>        
+    <rule>
+        <body><![CDATA[ 
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:imports (?ontology, ?ns){
+        "- **Imports:** " str(?olink) st:call-template(doc:moreimports, ?ontology, ?ns) " \n"
+    } WHERE { 
+        ?ontology owl:imports ?o .
+        BIND( IF( STRSTARTS( str(?o), str(?ns) ) , CONCAT( "[", STRAFTER(str(?o), str(?ns)), "](", str(?o), ")") , CONCAT( "[", str(IRI(?o)), "](", str(?o), ")" ) ) AS ?olink )
+        FILTER( isIRI(?o) )
+    } ORDER BY ?o LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:moreimports (?ontology, ?ns){
+        ", " str(?olink)
+    } WHERE { 
+        ?ontology owl:imports ?o .
+        BIND( IF( STRSTARTS( str(?o), str(?ns) ) , CONCAT( "[", STRAFTER(str(?o), str(?ns)), "](", str(?o), ")") , CONCAT( "[", str(IRI(?o)), "](", str(?o), ")" ) ) AS ?olink )
+        FILTER( isIRI(?o) )
+    } ORDER BY ?o OFFSET 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:title (?ontology){
+        "# " str(?title) "\n\n"
+    } WHERE { 
+        ?ontology dc:title ?title .
+        FILTER( (LANG(?title) = "en") || (LANG(?title) = ""))
+    } ORDER BY ?title LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:priorversion (?ontology){
+        "- **Previous version:** " ?priorVersion "\n"
+    } WHERE { 
+        ?ontology owl:priorVersion ?priorVersion .
+    } LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:authors (?ontology, ?predicate, ?term){
+        "- **" str(?term) ":** \n"
+        "  - " str(?htmlauthorname) " " str(?htmlauthor) "\n"
+        st:call-template(doc:moreauthors, ?ontology, ?predicate)
+    } WHERE { 
+        ?ontology ?predicate ?author .
+        OPTIONAL {
+         ?author foaf:name ?name .
+        }
+        BIND( IF(BOUND(?name), str(?name) , "") AS ?htmlauthorname)
+        BIND( IF(isIRI(?author), CONCAT( "[", str(IRI(?author)), "](", str(?author), ")") ,"") AS ?htmlauthor)
+    } ORDER BY ?author LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:moreauthors (?ontology, ?predicate){
+        "  - " str(?htmlauthorname) " " str(?htmlauthor) "\n"
+    } WHERE { 
+        ?ontology ?predicate ?author .
+        OPTIONAL {
+         ?author foaf:name ?name .
+        }
+        BIND( IF(BOUND(?name), str(?name) , "") AS ?htmlauthorname)
+        BIND( IF(isIRI(?author), CONCAT( "[", str(IRI(?author)), "](", str(?author), ")") ,"") AS ?htmlauthor)
+    } ORDER BY ?author OFFSET 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:date (?ontology, ?predicate, ?term){
+        "- **" str(?term) ":** " str(?date) 
+        st:call-template(doc:moredates, ?ontology, ?predicate)
+        "\n"
+    } WHERE { 
+        ?ontology ?predicate ?date .
+    } ORDER BY DESC (?date) LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX voaf: <http://purl.org/vocommons/voaf#>
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX vann: <http://purl.org/vocab/vann/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:moredates (?ontology, ?predicate){
+        ", " str(?date) 
+    } WHERE { 
+        ?ontology ?predicate ?date .
+    } ORDER BY DESC (?date) OFFSET 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:description (?ontology){
+        st:call-template(doc:descriptionimg, ?ontology, ?description)
+        st:call-template(doc:descriptionhtml, ?ontology, ?description)
+    } WHERE { 
+        ?ontology dc:description ?description .
+    } ORDER BY DESC (?description)
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:descriptionimg (?ontology, ?s){
+        "[![image description of the ontology](" str(?s) ")]("str(?s)")\n\n"
+    } WHERE { 
+        FILTER( isIRI(?s) )
+    }
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:descriptionhtml (?ontology, ?s){
+        "\n\n" str(?s) "\n\n"
+    } WHERE { 
+        FILTER( isLiteral(?s) )
+    }
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX cc:   <http://creativecommons.org/ns#>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:license (?ontology){
+        "- **License:** This ontology is distributed under license " str(?licenselink) "\n"
+    } WHERE { 
+        ?ontology cc:license ?license .
+         BIND( CONCAT( "[", str(IRI(?license)), "](", str(?license), ")" ) AS ?licenselink)
+    }
+  ]]></body>
+    </rule>
+  
+    <rule>
+        <body><![CDATA[
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    TEMPLATE doc:classes (?ontology, ?ns, ?class, ?header){
+        str(?header)
+        st:call-template(doc:label, ?s)
+        "\n\n"
+        "**IRI:** " str(?slink) "\n\n"
+        st:call-template(doc:comment, ?s)
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:subClassOf, "_sub class of:_")
+        st:call-template(doc:object-of, ?ns, ?s, rdfs:domain, "_domain of:_")
+        st:call-template(doc:object-of, ?ns, ?s, rdfs:range, "_range of:_")
+        st:call-template(doc:object-of, ?ns, ?s, rdf:type, "_known instances:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:subPropertyOf, "_sub property of:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:domain, "_domain:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:range, "_range:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdf:seeAlso, "_see also:_")
+        st:call-template(doc:classes-more, ?ontology, ?ns, ?class)       
+    } WHERE { 
+        ?s a ?class ; 
+           rdfs:isDefinedBy ?ontology .
+         BIND( CONCAT( "[", str(IRI(?s)), "](", str(?s), ")") AS ?slink)
+    } ORDER BY ?s LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    TEMPLATE doc:classes-more (?ontology, ?ns, ?class){ 
+        st:call-template(doc:label, ?s)
+        "\n\n"
+        "**IRI:** " str(?slink) "\n"
+        st:call-template(doc:comment, ?s)
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:subClassOf, "_sub class of:_")
+        st:call-template(doc:object-of, ?ns, ?s, rdfs:domain, "_domain of:_")
+        st:call-template(doc:object-of, ?ns, ?s, rdfs:range, "_range of:_")
+        st:call-template(doc:object-of, ?ns, ?s, rdf:type, "_known instances:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:subPropertyOf, "_sub property of:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:domain, "_domain:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdfs:range, "_range:_")
+        st:call-template(doc:subject-of, ?ns, ?s, rdf:seeAlso, "_see also:_")
+        st:call-template(doc:classes-more, ?ontology, ?ns, ?class)
+    } WHERE { 
+        ?s a ?class ; 
+           rdfs:isDefinedBy ?ontology .
+         BIND( CONCAT( "[", str(IRI(?s)), "](", str(?s), ")") AS ?slink)
+    } ORDER BY ?s OFFSET 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[ 
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:object-of (?ns, ?o, ?predicate, ?label){ 
+        "- **" str(?label) "** " str(?slink) st:call-template(doc:object-of-more, ?ns, ?o, ?predicate, ?label) " \n"
+    } WHERE { 
+        ?s ?predicate ?o .
+        BIND( IF( STRSTARTS( str(?s), str(?ns) ) , CONCAT( "[", STRAFTER(str(?s), str(?ns)), "](", str(?s), ")") , CONCAT( "[", str(IRI(?s)), "](", str(?s), ")") ) AS ?slink )
+        FILTER( isIRI(?s) )
+    } ORDER BY ?s LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:object-of-more (?ns, ?o, ?predicate, ?label){ 
+        ", " str(?slink)
+    } WHERE { 
+        ?s ?predicate ?o .
+        BIND( IF( STRSTARTS( str(?s), str(?ns) ) , CONCAT( "[", STRAFTER(str(?s), str(?ns)), "](", str(?s), ")") , CONCAT( "[", str(IRI(?s)), "](", str(?s), ")" ) ) AS ?slink )
+        FILTER( isIRI(?s) )
+    } ORDER BY ?s OFFSET 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[ 
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:subject-of (?ns, ?s, ?predicate, ?label){
+        "- **" str(?label) "** " str(?olink) st:call-template(doc:subject-of-more, ?ns, ?s, ?predicate, ?label) " \n"
+    } WHERE { 
+        ?s ?predicate ?o .
+        BIND( IF( STRSTARTS( str(?o), str(?ns) ) , CONCAT( "[", STRAFTER(str(?o), str(?ns)), "](", str(?o), ")") , CONCAT( "[", str(IRI(?o)), "](", str(?o), ")" ) ) AS ?olink )
+        FILTER( isIRI(?o) )
+    } ORDER BY ?o LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:subject-of-more (?ns, ?s, ?predicate, ?label){
+        ", " str(?olink)
+    } WHERE { 
+        ?s ?predicate ?o .
+        BIND( IF( STRSTARTS( str(?o), str(?ns) ) , CONCAT( "[", STRAFTER(str(?o), str(?ns)), "](", str(?o), ")") , CONCAT( "[", str(IRI(?o)), "](", str(?o), ")" ) ) AS ?olink )
+        FILTER( isIRI(?o) )
+    } ORDER BY ?o OFFSET 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:label (?s){
+        "#### " str(?label) " "
+    } WHERE { 
+        ?s rdfs:label ?label .
+        FILTER( (LANG(?label) = "en") || (LANG(?label) = ""))
+        BIND( IRI(?label) AS ?labelid )
+    } LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX dc:   <http://purl.org/dc/terms/>
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:comment (?s){
+        "\n\n" str(?comment) "\n\n"
+    } WHERE { 
+        ?s rdfs:comment ?comment .
+        FILTER( (LANG(?comment) = "en") || (LANG(?comment) = ""))
+    } LIMIT 1
+  ]]></body>
+    </rule>
+
+    
+    <rule>
+        <body><![CDATA[
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    TEMPLATE doc:str (?iri) {
+        ?striri
+    } WHERE { 
+        BIND( SUBSTR( str(?iri), 1, (STRLEN(str(?iri)) - xsd:decimal(1))) AS ?striri)
+    }
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    TEMPLATE doc:instance (?ontology, ?ns){
+        "### Instances\n"
+        "\n"
+        st:call-template(doc:label, ?s)
+        "\n\n"
+        "**IRI:**" str(?slink) "\n"
+        st:call-template(doc:comment, ?s)
+        "\n"
+        st:call-template(doc:subject-of, ?ns, ?s, rdf:type, "_instance of:_")
+        "\n"
+        st:call-template(doc:subject-of, ?ns, ?s, rdf:seeAlso, "_see also:_")
+        "\n"
+        st:call-template(doc:instance-more, ?ontology, ?ns)
+       
+    } WHERE { 
+        ?s rdfs:isDefinedBy ?ontology .
+         BIND( CONCAT( "[", str(IRI(?s)), "](", str(?s), ")") AS ?slink)
+           FILTER NOT EXISTS {
+            { ?s a owl:Class } UNION { ?s a owl:ObjectProperty } UNION { ?s a owl:DatatypeProperty } 
+           }
+    } ORDER BY ?s LIMIT 1
+  ]]></body>
+    </rule>
+    <rule>
+        <body><![CDATA[
+    PREFIX st: <http://ns.inria.fr/sparql-template/>
+    PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    TEMPLATE doc:instance-more (?ontology, ?ns){
+        "\n\n" st:call-template(doc:label, ?s)
+        "\n\n"
+        "**IRI:**" str(?slink) "\n"
+        st:call-template(doc:comment, ?s)
+        "\n\n"
+        st:call-template(doc:subject-of, ?ns, ?s, rdf:type, "_instance of:_")
+        "\n\n"
+        st:call-template(doc:subject-of, ?ns, ?s, rdf:seeAlso, "_see also:_")
+        "\n\n"
+        st:call-template(doc:instance-more, ?ontology, ?ns)
+       
+    } WHERE { 
+        ?s rdfs:isDefinedBy ?ontology .
+         BIND( CONCAT( "[", str(IRI(?s)), "](", str(?s), ")") AS ?slink)
+           FILTER NOT EXISTS {
+            { ?s a owl:Class } UNION { ?s a owl:ObjectProperty } UNION { ?s a owl:DatatypeProperty } 
+           }
+    } ORDER BY ?s OFFSET 1
+  ]]></body>
+    </rule>
+</rdf:RDF>
