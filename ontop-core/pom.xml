@@ -15,7 +15,7 @@
     <url>https://w3id.org/ontop/</url>
 
     <properties>
-        <rdfp.version>1.1</rdfp.version>
+        <rdfp.version>1.2</rdfp.version>
     </properties>
 
     <dependencies>
