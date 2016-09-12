@@ -53,7 +53,7 @@ For now, `ontop-maven-plugin` checks the following items:
 
 - The file name must be of the form `NAME-MAJOR.MINOR.ttl`.
 - There must be a unique instance of `owl:Ontology`, it must also be an instance of `voaf:Vocabulary`. Its URI must start with `base`. 
-- The ontology must be annotated with properties `dc:title`, `dc:description`, `dc:issued`, `dc:author`, `cc:license`.
+- The ontology must be annotated with properties `dc:title`, `dc:description`, `dc:issued`, `dc:creator`, `cc:license`.
 - It must have a `vann:preferredNamespacePrefix`, a `vann:preferredNamespaceUri` that starts with `base`.
 - It must have a `owl:versionIRI` that starts with `base`.
 - It must have a `owl:versionInfo` that starts with `v{MAJOR}.{MINOR}`.

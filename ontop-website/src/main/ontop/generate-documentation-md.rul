@@ -40,7 +40,7 @@ limitations under the License.-->
         "- **This version:** " str(?versionInfo) " - " str(?versionUri) "\n"
         "- **Latest published version:** " str(?ontology) "\n"        
         st:call-template(doc:priorversion, ?ontology)
-        st:call-template(doc:authors, ?ontology, dc:author, "Authors")
+        st:call-template(doc:authors, ?ontology, dc:creator, "Authors")
         st:call-template(doc:authors, ?ontology, dc:contributor, "Contributors")
         st:call-template(doc:date, ?ontology, dc:issued, "Issued")
         st:call-template(doc:date, ?ontology, dc:modified, "Modified")

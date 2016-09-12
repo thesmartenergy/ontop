@@ -43,7 +43,7 @@ import org.apache.jena.vocabulary.RDFS;
  */
 public class VersionedOntologyFactory {
 
-    static final Pattern p = Pattern.compile("^([a-zA-Z]*)-([0-9]+)\\.([0-9]+)\\.ttl$");
+    static final Pattern p = Pattern.compile("^([a-zA-Z][a-zA-Z0-9-]*)-([0-9]+)\\.([0-9]+)\\.ttl$");
 
     // maps file name to ontology paths. 
     static final Map<String, String> ontoShortNames = new HashMap<>();
@@ -120,7 +120,7 @@ public class VersionedOntologyFactory {
 //                errors.add(ex.getMessage());
 //            }
         try {
-            getObjects(model, ontology, "http://purl.org/dc/terms/author");
+            getObjects(model, ontology, "http://purl.org/dc/terms/creator");
         } catch (OntopException ex) {
             errors.add(ex.getMessage());
         }

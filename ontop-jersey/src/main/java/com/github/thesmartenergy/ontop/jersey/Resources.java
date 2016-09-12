@@ -42,8 +42,8 @@ public class Resources {
     @Inject
     HttpServletRequest req;
 
-    @GET
-    @Path("{resourcePath: .*}")
+    @GET 
+   @Path("{resourcePath: .*}")
     public Response get(@Context Request request, @PathParam("resourcePath") String resourcePath) {
         Boolean setCanonicalPath = (Boolean) req.getAttribute("setCanonicalPath");
         String base = (String) req.getAttribute("base");

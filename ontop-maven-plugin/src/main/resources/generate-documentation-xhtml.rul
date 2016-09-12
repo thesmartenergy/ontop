@@ -41,7 +41,7 @@ xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
         "<dt>Latest published version:</dt>\n"
         "<dd><a href='" str(?ontology) "'>" str(?ontology) "</a></dd>\n"        
         str(?htmlpriorversion)
-        st:call-template(doc:authors, ?ontology, dc:author, "Authors")
+        st:call-template(doc:authors, ?ontology, dc:creator, "Creators")
         st:call-template(doc:authors, ?ontology, dc:contributor, "Contributors")
         st:call-template(doc:subject-of, ?ns, ?ontology, owl:imports, "imports ontologies:")
         "<dt>Other visualizations:</dt>\n"

@@ -40,7 +40,7 @@ limitations under the License.-->
         "- **This version:** " str(?versionInfo) " - " str(?versionUri) "\n"
         "- **Latest published version:** " str(?ontology) "\n"        
         st:call-template(doc:priorversion, ?ontology)
-        st:call-template(doc:authors, ?ontology, dc:author, "Authors")
+        st:call-template(doc:authors, ?ontology, dc:creator, "Creators")
         st:call-template(doc:authors, ?ontology, dc:contributor, "Contributors")
         st:call-template(doc:date, ?ontology, dc:issued, "Issued")
         st:call-template(doc:date, ?ontology, dc:modified, "Modified")
@@ -138,8 +138,9 @@ limitations under the License.-->
     PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
     TEMPLATE doc:authors (?ontology, ?predicate, ?term){
         "- **" str(?term) ":** \n"
-        "  - " str(?htmlauthorname) " " str(?htmlauthor) "\n"
+        "    - " str(?htmlauthorname) " " str(?htmlauthor) "\n"
         st:call-template(doc:moreauthors, ?ontology, ?predicate)
+        "\n"
     } WHERE { 
         ?ontology ?predicate ?author .
         OPTIONAL {
@@ -160,7 +161,7 @@ limitations under the License.-->
     PREFIX st: <http://ns.inria.fr/sparql-template/>
     PREFIX doc: <https://w3id.org/seas/documentation/html/loweringRule#>
     TEMPLATE doc:moreauthors (?ontology, ?predicate){
-        "  - " str(?htmlauthorname) " " str(?htmlauthor) "\n"
+        "    - " str(?htmlauthorname) " " str(?htmlauthor)
     } WHERE { 
         ?ontology ?predicate ?author .
         OPTIONAL {

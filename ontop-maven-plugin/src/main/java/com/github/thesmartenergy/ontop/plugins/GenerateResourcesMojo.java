@@ -230,6 +230,7 @@ public class GenerateResourcesMojo extends AbstractMojo {
                     continue;
                 }
                 String regex = selector.asLiteral().getLexicalForm();
+                report.println("regex is: " + regex);
                 final Pattern p;
                 final Path directoryPath = Paths.get(inputDirectory.toURI());
                 try {
@@ -245,7 +246,9 @@ public class GenerateResourcesMojo extends AbstractMojo {
                                 public boolean test(Path t) {
                                     String relativePath = directoryPath.relativize(t).toString();
                                     Matcher m = p.matcher(relativePath);
-                                    return m.matches();
+                                    boolean matches = m.matches();
+                                    report.println("testing file: " + directoryPath + " vs " + t + " gives  " + relativePath + " -> matches: " + matches);
+                                    return matches;
                                 }
                             }).forEach(new Consumer<Path>() {
                         @Override
@@ -475,7 +478,8 @@ public class GenerateResourcesMojo extends AbstractMojo {
         model.setNsPrefix("", base);
         model.setNsPrefix("rdf", RDF.uri);
         model.setNsPrefix("rdfs", RDFS.uri);
-        model.setNsPrefix("ontop", RDFP.NS);
+        model.setNsPrefix("rdfp", RDFP.NS);
+        model.setNsPrefix("ontop", ONTOP.NS);
         Map<String, String> redirections = map.getRedirections();
         for (String path : redirections.keySet()) {
             model.add(model.getResource(path), RDFS.isDefinedBy, model.getResource(redirections.get(path)));
@@ -537,6 +541,8 @@ public class GenerateResourcesMojo extends AbstractMojo {
                 model.add(r, RDFP.mediaType, "application/rdf+xml");
             }
         }
+        report.println("ontologies model is ");
+        model.write(report, "TTL", base);
         return model;
     }
 
@@ -584,6 +590,8 @@ public class GenerateResourcesMojo extends AbstractMojo {
                 model.add(model.getResource(graphResource.getGraphPath()), RDFP.alias, model.getResource(""));
             }
         }
+        report.println("graphs model is ");
+        model.write(report, "TTL", base);
         return model;
     }
 
