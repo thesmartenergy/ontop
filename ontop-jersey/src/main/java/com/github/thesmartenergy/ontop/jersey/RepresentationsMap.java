@@ -16,7 +16,6 @@
 package com.github.thesmartenergy.ontop.jersey;
 
 import com.github.thesmartenergy.ontop.OntopException;
-import com.github.thesmartenergy.rdfp.BaseURI;
 import com.github.thesmartenergy.rdfp.RDFP;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,9 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
@@ -44,10 +40,26 @@ import org.apache.jena.vocabulary.RDFS;
  *
  * @author Maxime Lefrançois <maxime.lefrancois at emse.fr>
  */
-@ApplicationScoped
 public class RepresentationsMap {
 
     private static final Logger LOG = Logger.getLogger(RepresentationsMap.class.getSimpleName());
+    
+    private static RepresentationsMap INSTANCE = null;
+
+    static RepresentationsMap get(String base) {
+        if(base == null) {
+            throw new NullPointerException();
+        }
+        if(INSTANCE == null) {
+            INSTANCE = new RepresentationsMap(base);
+        } 
+        if(!INSTANCE.base.equals(base)) {
+            throw new IllegalArgumentException();
+        }
+        return INSTANCE;
+    }
+    
+    private final String base;
 
     /**
      * value rdfs:isDefinedBy key
@@ -69,16 +81,14 @@ public class RepresentationsMap {
      */
     private final Map<String, Representation> representations = new HashMap<>();
 
-    @Inject
-    @BaseURI
-    private String base;
+    
 
     private Model conf = null;
 
     private LocationMapper loc;
 
-    @PostConstruct
-    private void postConstruct() {
+    private RepresentationsMap(String base) {
+        this.base = base;
         System.out.println("Constructing representations map...");
 
         loc = StreamManager.get().getLocationMapper();

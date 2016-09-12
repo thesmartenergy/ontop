@@ -29,12 +29,13 @@ import javax.servlet.annotation.WebListener;
 public class Listener implements ServletContextListener{
 
     @Inject
-    RepresentationsMap map;
+    @BaseURI
+    private String base;
     
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         // force resource map initialization
-        map.getRepresentations();
+        RepresentationsMap.get(base);
     }
 
     @Override

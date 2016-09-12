@@ -15,6 +15,7 @@
  */
 package com.github.thesmartenergy.ontop.jersey;
 
+import com.github.thesmartenergy.rdfp.BaseURI;
 import com.github.thesmartenergy.rdfp.DevelopmentBaseURI;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +47,8 @@ public class ResourcesFilter implements Filter {
     String DEV_BASE;
 
     @Inject
-    RepresentationsMap map;
+    @BaseURI
+    String BASE; 
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -54,6 +56,7 @@ public class ResourcesFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        RepresentationsMap map = RepresentationsMap.get(BASE);
         HttpServletRequest req = ((HttpServletRequest) request);
         HttpServletResponse res = ((HttpServletResponse) response);
         String contextPath = req.getContextPath() + "/";
@@ -91,7 +94,7 @@ public class ResourcesFilter implements Filter {
                 }
             }
 
-            Set<Representation> offeredRepresentations = map.getMultiRepresentations().get(resourcePath);
+            Set<Representation> offeredRepresentations = map.getMultiRepresentations().get(resourcePath); 
             if (offeredRepresentations != null) {
                 for (Representation r : offeredRepresentations) {
                     available.add(r.getMediaType());
