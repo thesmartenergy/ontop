@@ -15,20 +15,30 @@
  */
 package com.github.thesmartenergy.ontop.jersey;
 
-import java.util.logging.Logger;
-import javax.ws.rs.ApplicationPath;
-import org.glassfish.jersey.server.ResourceConfig;
+import com.github.thesmartenergy.rdfp.BaseURI;
+import javax.inject.Inject;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 /**
- * 
- * @author maxime.lefrancois
+ *
+ * @author Maxime Lefrançois <maxime.lefrancois at emse.fr>
  */
-@ApplicationPath("_ontop")
-public class JerseyApp extends ResourceConfig {
+@WebListener
+public class Listener implements ServletContextListener{
 
-    private static final Logger LOG = Logger.getLogger(JerseyApp.class.getSimpleName());
-
-    public JerseyApp() {
-        packages("com.github.thesmartenergy.ontop.jersey");
+    @Inject
+    RepresentationsMap map;
+    
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        // force resource map initialization
+        map.getRepresentations();
     }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+    }
+    
 }

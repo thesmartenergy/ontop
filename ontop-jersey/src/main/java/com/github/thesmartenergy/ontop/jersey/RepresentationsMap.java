@@ -15,12 +15,12 @@
  */
 package com.github.thesmartenergy.ontop.jersey;
 
-
 import com.github.thesmartenergy.ontop.OntopException;
 import com.github.thesmartenergy.rdfp.BaseURI;
 import com.github.thesmartenergy.rdfp.RDFP;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -34,6 +34,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.system.stream.LocationMapper;
+import org.apache.jena.riot.system.stream.StreamManager;
 import org.apache.jena.vocabulary.RDFS;
 
 /**
@@ -44,7 +46,7 @@ import org.apache.jena.vocabulary.RDFS;
  */
 @ApplicationScoped
 public class RepresentationsMap {
-    
+
     private static final Logger LOG = Logger.getLogger(RepresentationsMap.class.getSimpleName());
 
     /**
@@ -73,8 +75,14 @@ public class RepresentationsMap {
 
     private Model conf = null;
 
+    private LocationMapper loc;
+
     @PostConstruct
     private void postConstruct() {
+        System.out.println("Constructing representations map...");
+
+        loc = StreamManager.get().getLocationMapper();
+
         final String confpath = "_ontop/config.ttl";
         try {
             conf = RDFDataMgr.loadModel(RepresentationsMap.class.getClassLoader().getResource(confpath).toURI().toString());
@@ -86,25 +94,60 @@ public class RepresentationsMap {
         try {
             readRedirections();
         } catch (OntopException ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new RuntimeException(ex);
         }
 
         try {
             readAliases();
         } catch (OntopException ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new RuntimeException(ex);
         }
 
         try {
             readRepresentations();
         } catch (OntopException ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new RuntimeException(ex);
         }
 
         try {
             readMultiRepresentations();
         } catch (OntopException ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new RuntimeException(ex);
+        }
+        
+        // close alts. 
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            Iterator<String> it = loc.listAltEntries();
+            Set<String> entries = new HashSet<>();
+            while (it.hasNext()) {
+                entries.add(it.next());
+            }
+            for (String entry : entries) {
+                String target = loc.getAltEntry(entry);
+                if (entry.equals(target)) {
+                    loc.removeAltEntry(entry);
+                    continue;
+                }
+                String targetTarget = loc.getAltEntry(target);
+                if (target.equals(targetTarget)) {
+                    loc.removeAltEntry(target);
+                    continue;
+                }
+                if (targetTarget != null) {
+                    loc.removeAltEntry(entry);
+                    loc.addAltEntry(entry, targetTarget);
+                    changed = true;
+                }
+                System.out.println("");
+            }
+        }
+        System.out.println("Jena StreamManager FileLocator contains:");
+        Iterator<String> it = loc.listAltEntries();
+        while (it.hasNext()) {
+            String entry = it.next();
+            System.out.println("Entry " + entry + " --> " + loc.getAltEntry(entry));
         }
     }
 
@@ -137,9 +180,13 @@ public class RepresentationsMap {
                 throw new OntopException("resource " + object + " should be a URI resource");
             }
             try {
-                redirections.put(getLocalPath(subject.getURI()), getLocalPath(object.asResource().getURI()));
+                String source = getLocalPath(subject.getURI());
+                String target = getLocalPath(object.asResource().getURI());
+                redirections.put(source, target);
+                loc.addAltEntry(subject.getURI(), object.asResource().getURI());
+                System.out.println("redirection " + subject.getURI() + " -> " + object.asResource().getURI());
             } catch (OntopException ex) {
-                throw new OntopException(ex.getMessage()); 
+                throw new OntopException(ex.getMessage());
             }
         }
 
@@ -162,6 +209,14 @@ public class RepresentationsMap {
                 MediaType mt = MediaType.valueOf(object.asLiteral().getLexicalForm());
                 Representation representation = new Representation(mt, localPath);
                 representations.put(localPath, representation);
+                if (mt.isCompatible(RDFP.TEXT_TURTLE_TYPE)) {
+                    try {
+                        String localUrl = RepresentationsMap.class.getClassLoader().getResource(representation.getLocalPath()).toString();
+                        loc.addAltEntry(base + localPath, localUrl);
+                        System.out.println("new representation " + base + localPath + " -> " + localUrl);
+                    } catch (Exception ex) {
+                    }
+                }
             } catch (Exception ex) {
                 throw new OntopException(ex.getClass().getName() + ": " + ex.getMessage());
             }
@@ -184,7 +239,7 @@ public class RepresentationsMap {
                 String localPath = getLocalPath(subject.getURI());
                 String objectLocalPath = getLocalPath(object.asResource().getURI());
                 Representation representation = representations.get(objectLocalPath);
-                if(representation==null) {
+                if (representation == null) {
                     throw new OntopException("representation should not be null for " + objectLocalPath);
                 }
                 Set<Representation> set = multiRepresentations.get(localPath);
@@ -193,6 +248,10 @@ public class RepresentationsMap {
                     multiRepresentations.put(localPath, set);
                 }
                 set.add(representation);
+                if(representation.isCompatible(RDFP.TEXT_TURTLE_TYPE)) {
+                    loc.addAltEntry(subject.getURI(), object.asResource().getURI());
+                }
+                System.out.println("new multi-representation " + subject.getURI() + " -> " + object.asResource().getURI());
             } catch (Exception ex) {
                 throw new OntopException(ex.getClass().getName() + ": " + ex.getMessage());
             }
@@ -216,6 +275,8 @@ public class RepresentationsMap {
                 String localPath = getLocalPath(subject.getURI());
                 String aliasLocalPath = getLocalPath(object.asResource().getURI());
                 aliases.put(aliasLocalPath, localPath);
+                loc.addAltEntry(object.asResource().getURI(), subject.getURI());
+                System.out.println("new alias " + object.asResource().getURI() + " -> " + subject.getURI());
             } catch (Exception ex) {
                 throw new OntopException(ex.getClass().getName() + ": " + ex.getMessage());
             }
