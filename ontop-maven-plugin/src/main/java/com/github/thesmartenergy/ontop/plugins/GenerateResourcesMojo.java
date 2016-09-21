@@ -178,6 +178,11 @@ public class GenerateResourcesMojo extends AbstractMojo {
                 throw new MojoExecutionException("error while serializing configuration file", ex);
             }
 
+            out.println("\n\n"
+                    + "#########################"
+                    + "generated config:\n\n");
+            generatedConf.write(out, "TTL", base);
+
             copyGeneratedRepresentationDirectory(out);
         } catch (IOException ex) {
             throw new MojoExecutionException("IO Exception with report file", ex);
@@ -401,13 +406,13 @@ public class GenerateResourcesMojo extends AbstractMojo {
                 )
         );
 
-        for (String folder : new String[]{"css", "fonts", "css", "images", "img", "js"}) {
-            try {
-                FileUtils.deleteDirectory(new File(ontopDirectory, folder));
-            } catch (IOException ex) {
-                getLog().warn("unable to delete useless file: " + ex.getMessage());
-            }
-        }
+//        for (String folder : new String[]{"css", "fonts", "css", "images", "img", "js"}) {
+//            try {
+//                FileUtils.deleteDirectory(new File(ontopDirectory, folder));
+//            } catch (IOException ex) {
+//                getLog().warn("unable to delete useless file: " + ex.getMessage());
+//            }
+//        }
 
         for (String file : new String[]{"project-info.html", "project-summary.html"}) {
             FileUtils.deleteQuietly(new File(ontopDirectory, file));

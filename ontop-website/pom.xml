@@ -15,6 +15,7 @@
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+        <ontop.version>1.2-SNAPSHOT</ontop.version>
     </properties>
 
     <dependencyManagement>
@@ -74,7 +75,7 @@
         <dependency>
             <groupId>com.github.thesmartenergy</groupId>
             <artifactId>ontop-jersey</artifactId>
-            <version>${project.version}</version>
+            <version>${ontop.version}</version>
         </dependency>
     </dependencies>
 
@@ -85,7 +86,7 @@
                 <plugin>
                     <groupId>com.github.thesmartenergy</groupId>
                     <artifactId>ontop-maven-plugin</artifactId>
-                    <version>${project.version}</version>
+                    <version>${ontop.version}</version>
                     <executions>
                         <execution>
                             <goals>
@@ -249,6 +250,14 @@
             </plugin>
 
             <!-- skip deployment of the website -->
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>

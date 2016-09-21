@@ -57,7 +57,7 @@ http://maxime-lefrancois.info/"""@en ;
   dc:creator <http://maxime-lefrancois.info/me#> ;
   dc:issued "2016-09-09"^^xsd:date ;
   dc:modified "2016-09-11"^^xsd:date ;
-  cc:license <https://creativecommons.org/licenses/by/4.0/> ;
+  cc:license <https://www.apache.org/licenses/LICENSE-2.0/> ;
   vann:preferredNamespacePrefix "ontop" ;
   vann:preferredNamespaceUri ontop: ;  
   owl:versionIRI <ontop-1.0> ;

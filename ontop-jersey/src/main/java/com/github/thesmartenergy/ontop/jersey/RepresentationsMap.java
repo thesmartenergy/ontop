@@ -43,22 +43,22 @@ import org.apache.jena.vocabulary.RDFS;
 public class RepresentationsMap {
 
     private static final Logger LOG = Logger.getLogger(RepresentationsMap.class.getSimpleName());
-    
+
     private static RepresentationsMap INSTANCE = null;
 
     static RepresentationsMap get(String base) {
-        if(base == null) {
+        if (base == null) {
             throw new NullPointerException();
         }
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new RepresentationsMap(base);
-        } 
-        if(!INSTANCE.base.equals(base)) {
+        }
+        if (!INSTANCE.base.equals(base)) {
             throw new IllegalArgumentException();
         }
         return INSTANCE;
     }
-    
+
     private final String base;
 
     /**
@@ -80,8 +80,6 @@ public class RepresentationsMap {
      * key ontop:mediaType some media type
      */
     private final Map<String, Representation> representations = new HashMap<>();
-
-    
 
     private Model conf = null;
 
@@ -124,7 +122,7 @@ public class RepresentationsMap {
         } catch (OntopException ex) {
             throw new RuntimeException(ex);
         }
-        
+
         // close alts. 
         boolean changed = true;
         while (changed) {
@@ -219,13 +217,11 @@ public class RepresentationsMap {
                 MediaType mt = MediaType.valueOf(object.asLiteral().getLexicalForm());
                 Representation representation = new Representation(mt, localPath);
                 representations.put(localPath, representation);
-                if (mt.isCompatible(RDFP.TEXT_TURTLE_TYPE)) {
-                    try {
-                        String localUrl = RepresentationsMap.class.getClassLoader().getResource(representation.getLocalPath()).toString();
-                        loc.addAltEntry(base + localPath, localUrl);
-                        System.out.println("new representation " + base + localPath + " -> " + localUrl);
-                    } catch (Exception ex) {
-                    }
+                try {
+                    String localUrl = RepresentationsMap.class.getClassLoader().getResource(representation.getLocalPath()).toString();
+                    loc.addAltEntry(base + localPath, localUrl);
+                    System.out.println("new RDF representation " + base + localPath + " -> " + localUrl);
+                } catch (Exception ex) {
                 }
             } catch (Exception ex) {
                 throw new OntopException(ex.getClass().getName() + ": " + ex.getMessage());
@@ -258,9 +254,7 @@ public class RepresentationsMap {
                     multiRepresentations.put(localPath, set);
                 }
                 set.add(representation);
-                if(representation.isCompatible(RDFP.TEXT_TURTLE_TYPE)) {
-                    loc.addAltEntry(subject.getURI(), object.asResource().getURI());
-                }
+                loc.addAltEntry(subject.getURI(), object.asResource().getURI());
                 System.out.println("new multi-representation " + subject.getURI() + " -> " + object.asResource().getURI());
             } catch (Exception ex) {
                 throw new OntopException(ex.getClass().getName() + ": " + ex.getMessage());
