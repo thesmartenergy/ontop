@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>com.github.thesmartenergy</groupId>
-            <artifactId>rdfp-jersey-server</artifactId>
+            <artifactId>rdfp-core</artifactId>
             <version>${rdfp.version}</version>
         </dependency>
 
