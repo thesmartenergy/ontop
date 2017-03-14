@@ -19,7 +19,6 @@
 
     <modules>
         <module>ontop-core</module>
-        <module>ontop-jersey</module>
         <module>ontop-maven-plugin</module>
         <module>ontop-website</module>
     </modules>
