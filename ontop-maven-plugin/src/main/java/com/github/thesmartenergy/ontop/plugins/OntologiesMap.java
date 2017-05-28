@@ -57,7 +57,7 @@ public class OntologiesMap {
 
     private boolean registerMainUri(VersionedOntology ontology) throws OntopException {
         String ontologyPath = ontology.getOntologyPath();
-        VersionedOntology other = ONTO_RESOURCES.get(ontologyPath);
+        VersionedOntology other = ONTO_RESOURCES.get(consolidate(ontologyPath));
         if (other == null || ontology.compareVersions(other) > 0) {
             ONTO_RESOURCES.put(consolidate(ontologyPath), ontology);
             return true;
@@ -93,6 +93,9 @@ public class OntologiesMap {
     }
 
     private String consolidate(String path) {
+        if(path==null) {
+            return "index";
+        }
         if (path.equals("") || path.endsWith("/")) {
             return path + "index";
         }

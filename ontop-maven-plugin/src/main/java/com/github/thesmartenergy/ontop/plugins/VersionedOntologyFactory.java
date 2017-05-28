@@ -126,7 +126,7 @@ public class VersionedOntologyFactory {
         }
 
         try {
-            getObject(model, ontology, "http://creativecommons.org/ns#license");
+            getObject(model, ontology, "http://purl.org/dc/terms/license");
         } catch (OntopException ex) {
             errors.add(ex.getMessage());
         }
